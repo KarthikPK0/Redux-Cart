@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../Components/Header'
 import { useDispatch, useSelector } from 'react-redux'
 import { incQuantity, removeCartItem, decQuantity, emptyCart } from '../../redux/slices/cartSlice'
@@ -9,8 +9,17 @@ import { Link, useNavigate } from 'react-router-dom'
 
 function Cart() {
   const dispatch = useDispatch()
+  const [cartTotal, setCartTotal] = useState(0)
   const ourCart = useSelector(state => state.cartReducer)
   const navigate = useNavigate()
+
+  useEffect(()=>{
+    if(ourCart?.length>0){
+      setCartTotal(ourCart?.map(item=>item.totalPrice).reduce((t1,t2)=>t1+t2))
+    }else{
+      setCartTotal(0)
+    }
+  },[ourCart])
 
   const handleDecrement = (product) => {
     if(product.quantity>1){
@@ -77,7 +86,7 @@ function Cart() {
                    </div>
                 </div>
                 <div className="col-lg-4">
-                  <div className="border rounded p-3">Total Amount : <span className='text-danger'>$ 4500</span>
+                  <div className="border rounded p-3">Total Amount : <span className='text-danger'>$ {cartTotal}</span>
                   <hr />
                   <div className="d-grid">
                     <button onClick={checkout} className='btn btn-success'>Checkout</button>
